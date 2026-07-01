@@ -1,0 +1,34 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  assets    Asset[]
+  createdAt DateTime @default(now())
+}
+
+model Asset {
+  id           String   @id @default(uuid())
+  filename     String
+  blobName     String   @unique
+  mimeType     String
+  sizeInBytes  Int
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+  createdAt    DateTime @default(now())
+}
